@@ -30,18 +30,21 @@ export async function createInvoice(formData: FormData) {
     date
   });
 
-  await sql`
+  try {
+    await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
+  } catch (error) {
+    console.error("Failed to create invoice", error);
+    return { message: "Database error: Failed to create invoice" };
+  }
   revalidatePath("/dashboard/invoices");
   redirect("/dashboard/invoices");
 }
 
 // Use Zod to update the expected types
 const UpdateInvoice = InvoiceSchema.omit({ date: true });
-
-// ...
 
 export async function updateInvoice(id: string, formData: FormData) {
   const { customerId, amount, status } = UpdateInvoice.parse({
@@ -52,18 +55,29 @@ export async function updateInvoice(id: string, formData: FormData) {
   });
 
   const amountInCents = amount * 100;
-
-  await sql`
+  try {
+    await sql`
     UPDATE invoices
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
     WHERE id = ${id}
   `;
+  } catch (error) {
+    console.error("Failed to update invoice", error);
+    return { message: "Database error: Failed to update invoice" };
+  }
 
   revalidatePath("/dashboard/invoices");
   redirect("/dashboard/invoices");
 }
 
 export async function deleteInvoice(id: string) {
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
+  // throw error early to test error component
+  // throw new Error("Failed to Delete Invoice");
+  try {
+    await sql`DELETE FROM invoices WHERE id = ${id}`;
+  } catch (error) {
+    console.error("Failed to delete invoice", error);
+    return { message: "Database error: Failed to delete invoice" };
+  }
   revalidatePath("/dashboard/invoices");
 }
