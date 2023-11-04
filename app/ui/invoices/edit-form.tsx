@@ -136,6 +136,17 @@ export default function EditInvoiceForm({
             </div>
           </div>
         </div>
+        {state.errors?.status ? (
+          <div
+            id="customer-error"
+            aria-live="polite"
+            className="mt-2 text-sm text-red-500"
+          >
+            {state.errors.status.map((error: string) => (
+              <p key={error}>{error}</p>
+            ))}
+          </div>
+        ) : null}
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link

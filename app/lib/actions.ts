@@ -89,7 +89,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
 }
 
 // Use Zod to update the expected types
-const UpdateInvoice = InvoiceSchema.omit({ date: true });
+const UpdateInvoice = InvoiceSchema.omit({ date: true, id: true });
 
 export async function updateInvoice(
   id: string,
@@ -111,7 +111,6 @@ export async function updateInvoice(
 
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
-
   try {
     await sql`
       UPDATE invoices
@@ -119,9 +118,9 @@ export async function updateInvoice(
       WHERE id = ${id}
     `;
   } catch (error) {
+    console.log("Failed to update invoice", error);
     return { message: "Database Error: Failed to Update Invoice." };
   }
-
   revalidatePath("/dashboard/invoices");
   redirect("/dashboard/invoices");
 }
