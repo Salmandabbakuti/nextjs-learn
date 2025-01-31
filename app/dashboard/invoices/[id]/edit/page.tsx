@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Edit Invoice',
 };
 
-export default async function Page({ params }: { params: { id: string; }; }) {
+export default async function Page({ params }: { params: Readonly<{ id: string; }>; }) {
   const id = params.id;
   const [invoice, customers] = await Promise.all([
     fetchInvoiceById(id),
@@ -31,7 +31,7 @@ export default async function Page({ params }: { params: { id: string; }; }) {
           },
         ]}
       />
-      <Form invoice={invoice!} customers={customers} />
+      <Form invoice={invoice} customers={customers} />
     </main>
   );
 }
